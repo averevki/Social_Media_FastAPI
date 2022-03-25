@@ -16,6 +16,7 @@ def find_by_id(id_: int) -> dict | None:
             return post
     return None
 
+
 def find_post_index(id_: int) -> int | None:
     for index, post in enumerate(all_posts):
         if post["id"] == id_:
