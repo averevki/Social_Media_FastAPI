@@ -5,27 +5,35 @@ Using: FastAPI, Progresql database
 API that allow users to exchange posts on
 social media simulation
 """
+# TODO documentation
 
 from time import sleep
 
-from fastapi import FastAPI, Response, status, HTTPException
+from fastapi import FastAPI, Response, status, HTTPException, Depends
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from sqlalchemy.orm import Session
+
+from . import models
+from .database import engine, get_db
 
 __author__ = "Aleksandr Verevkin"
 __license__ = "GNU GPL v.3"
 __status__ = "production"
 __maintainer__ = "Aleksandr Verevkin"
 
-# TODO documentation
+models.Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
 
 # connection to database
 while True:
     try:
-        conn = psycopg2.connect(host="localhost", database="social_media_db", user="postgres", password="123321",
-                                cursor_factory=RealDictCursor)  # TODO move information into .env
+        conn = psycopg2.connect(host="localhost",
+                                database="social_media_db",
+                                user="postgres", password="123321",
+                                cursor_factory=RealDictCursor)
         cur = conn.cursor()
         print("Successful database connection")
         break
@@ -114,3 +122,8 @@ def update_post(id_: int, post: Post):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post was not found (id: {id_})")
     return {"updated post": updated_post}
+
+# @app.get("/sqlalchemy")
+# def test_post(db: Session = Depends(get_db)):
+#     posts = db.query(models.Post).all()
+#     return {"all posts": posts}
