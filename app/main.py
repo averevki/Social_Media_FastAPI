@@ -1,4 +1,11 @@
-from random import randrange
+"""Social media API
+
+Using: FastAPI, Progresql database
+
+API that allow users to exchange posts on
+social media simulation
+"""
+
 from time import sleep
 
 from fastapi import FastAPI, Response, status, HTTPException
@@ -6,12 +13,18 @@ from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-# TODO documentation, header
+__author__ = "Aleksandr Verevkin"
+__license__ = "GNU GPL v.3"
+__status__ = "production"
+__maintainer__ = "Aleksandr Verevkin"
+
+# TODO documentation
 app = FastAPI()
 
+# connection to database
 while True:
     try:
-        conn = psycopg2.connect(host="localhost", database="social_media_db", user="postgres", password="2682",
+        conn = psycopg2.connect(host="localhost", database="social_media_db", user="postgres", password="123321",
                                 cursor_factory=RealDictCursor)  # TODO move information into .env
         cur = conn.cursor()
         print("Successful database connection")
@@ -23,6 +36,7 @@ while True:
 
 
 class Post(BaseModel):
+    """Base post model"""
     title: str
     content: str
     published: bool = True
