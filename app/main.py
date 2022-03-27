@@ -16,7 +16,9 @@ from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from . import models, schemas
-from .database import Base, engine, get_db
+from .database import Base, engine, get_db, load_dotenv, getenv
+
+load_dotenv()
 
 __author__ = "Aleksandr Verevkin"
 __license__ = "GNU GPL v.3"
@@ -30,9 +32,9 @@ app = FastAPI()
 # connection to database
 while True:
     try:
-        conn = psycopg2.connect(host="localhost",
-                                database="social_media_db",
-                                user="postgres", password="123321",
+        conn = psycopg2.connect(host=getenv("HOST"),
+                                database=getenv("DB_USER"),
+                                user=getenv("DB_USER"), password=getenv("DB_PASSWORD"),
                                 cursor_factory=RealDictCursor)
         cur = conn.cursor()
         print("Successful database connection")
