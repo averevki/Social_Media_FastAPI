@@ -24,7 +24,7 @@ __status__ = "production"
 __maintainer__ = "Aleksandr Verevkin"
 
 Base.metadata.create_all(bind=engine)
-
+# API instance
 app = FastAPI()
 
 # connection to database
@@ -32,7 +32,7 @@ while True:
     try:
         conn = psycopg2.connect(host="localhost",
                                 database="social_media_db",
-                                user="postgres", password="2682",
+                                user="postgres", password="123321",
                                 cursor_factory=RealDictCursor)
         cur = conn.cursor()
         print("Successful database connection")
@@ -48,14 +48,14 @@ def root():
     return {"message": "Hi :)"}
 
 
-@app.get("/posts")
+@app.get("/posts", response_model=list[schemas.Post])
 def get_posts(db: Session = Depends(get_db)):
     # fetch all existing posts
     posts = db.query(models.Post).all()
-    return {"all posts": posts}
+    return posts
 
 
-@app.post("/posts", status_code=status.HTTP_201_CREATED)
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
     # insert single post
     created_post = models.Post(**dict(post))    # unpack class as dictionary for easier input
@@ -64,17 +64,17 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
     db.commit()
     # get created post for returning
     db.refresh(created_post)
-    return {"new post": created_post}
+    return created_post
 
 
-@app.get("/posts/latest")
+@app.get("/posts/latest", response_model=schemas.Post)
 def get_latest_post(db: Session = Depends(get_db)):
     # get last inserted post
     latest_post = db.query(models.Post).order_by(desc(models.Post.id)).first()
-    return {"latest post": latest_post}
+    return latest_post
 
 
-@app.get("/posts/{id_}")
+@app.get("/posts/{id_}", response_model=schemas.Post)
 def get_post(id_: int, db: Session = Depends(get_db)):
     # find post by id
     found_post = db.query(models.Post).filter(models.Post.id == id_).first()
@@ -82,7 +82,7 @@ def get_post(id_: int, db: Session = Depends(get_db)):
     if found_post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post was not found (id: {id_})")
-    return {"found post": found_post}
+    return found_post
 
 
 @app.delete("/posts/{id_}", status_code=status.HTTP_204_NO_CONTENT)
@@ -100,7 +100,7 @@ def delete_post(id_: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@app.put("/posts/{id_}")
+@app.put("/posts/{id_}", response_model=schemas.Post)
 def update_post(id_: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
     # find post by id
     updated_post = db.query(models.Post).filter_by(id=id_)
@@ -112,4 +112,4 @@ def update_post(id_: int, post: schemas.PostCreate, db: Session = Depends(get_db
     updated_post.update(dict(post), synchronize_session=False)
     # commit database changes
     db.commit()
-    return {"updated post": updated_post.first()}
+    return updated_post.first()

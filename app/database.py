@@ -1,10 +1,11 @@
+"""Connection to database"""
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 database = "postgresql"
 username = "postgres"
-password = "2682"
+password = "123321"
 port = "localhost"
 db_name = "social_media_db"
 
