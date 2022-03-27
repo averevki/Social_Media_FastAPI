@@ -10,13 +10,12 @@ social media simulation
 from time import sleep
 
 from fastapi import FastAPI, Response, status, HTTPException, Depends
-from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
-from . import models
+from . import models, schemas
 from .database import Base, engine, get_db
 
 __author__ = "Aleksandr Verevkin"
@@ -33,7 +32,7 @@ while True:
     try:
         conn = psycopg2.connect(host="localhost",
                                 database="social_media_db",
-                                user="postgres", password="123321",
+                                user="postgres", password="2682",
                                 cursor_factory=RealDictCursor)
         cur = conn.cursor()
         print("Successful database connection")
@@ -42,13 +41,6 @@ while True:
         print(f"Database connection failed.\nError: {e}")
         sleep(2)
         print("Trying again...")
-
-
-class Post(BaseModel):
-    """Base post model"""
-    title: str
-    content: str
-    published: bool = True
 
 
 @app.get("/")
@@ -64,7 +56,7 @@ def get_posts(db: Session = Depends(get_db)):
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_post(post: Post, db: Session = Depends(get_db)):
+def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
     # insert single post
     created_post = models.Post(**dict(post))    # unpack class as dictionary for easier input
     db.add(created_post)
@@ -109,7 +101,7 @@ def delete_post(id_: int, db: Session = Depends(get_db)):
 
 
 @app.put("/posts/{id_}")
-def update_post(id_: int, post: Post, db: Session = Depends(get_db)):
+def update_post(id_: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
     # find post by id
     updated_post = db.query(models.Post).filter_by(id=id_)
     # return 404 if post was not found

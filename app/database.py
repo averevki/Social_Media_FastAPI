@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 database = "postgresql"
 username = "postgres"
-password = "123321"
+password = "2682"
 port = "localhost"
 db_name = "social_media_db"
 
