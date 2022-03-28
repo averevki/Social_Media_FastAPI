@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 
 from . import models, schemas
 from .database import Base, engine, get_db, load_dotenv, getenv
+from .utils import hash_password
 
 load_dotenv()
 
@@ -119,6 +120,8 @@ def update_post(id_: int, post: schemas.PostCreate, db: Session = Depends(get_db
 
 @app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    # save hashed password
+    user.password = hash_password(user.password)
     # create single user
     new_user = models.User(**dict(user))  # unpack class as dictionary for easier input
     db.add(new_user)
