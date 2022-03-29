@@ -1,19 +1,22 @@
-from fastapi import Response, status, HTTPException, Depends
+"""Router with post queries"""
+from fastapi import Response, status, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
 from .. import models, schemas
-from ..main import app
+from ..database import get_db
+
+router = APIRouter()
 
 
-@app.get("/posts", response_model=list[schemas.Post])
+@router.get("/", response_model=list[schemas.Post])
 def get_posts(db: Session = Depends(get_db)):
     # fetch all existing posts
     posts = db.query(models.Post).all()
     return posts
 
 
-@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
     # insert single post
     created_post = models.Post(**dict(post))    # unpack class as dictionary for easier input
@@ -25,14 +28,14 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
     return created_post
 
 
-@app.get("/posts/latest", response_model=schemas.Post)
+@router.get("/latest", response_model=schemas.Post)
 def get_latest_post(db: Session = Depends(get_db)):
     # get last inserted post
     latest_post = db.query(models.Post).order_by(desc(models.Post.id)).first()
     return latest_post
 
 
-@app.get("/posts/{id_}", response_model=schemas.Post)
+@router.get("/{id_}", response_model=schemas.Post)
 def get_post(id_: int, db: Session = Depends(get_db)):
     # find post by id
     found_post = db.query(models.Post).filter(models.Post.id == id_).first()
@@ -43,7 +46,7 @@ def get_post(id_: int, db: Session = Depends(get_db)):
     return found_post
 
 
-@app.delete("/posts/{id_}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id_}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id_: int, db: Session = Depends(get_db)):
     # find post for deletion by id
     deleted_post = db.query(models.Post).filter(models.Post.id == id_)
@@ -58,7 +61,7 @@ def delete_post(id_: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@app.put("/posts/{id_}", response_model=schemas.Post)
+@router.put("/{id_}", response_model=schemas.Post)
 def update_post(id_: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
     # find post by id
     updated_post = db.query(models.Post).filter_by(id=id_)

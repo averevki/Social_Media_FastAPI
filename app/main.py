@@ -14,6 +14,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 from .database import Base, engine, load_dotenv, getenv
+from .routers import posts, users
 
 load_dotenv()
 
@@ -40,6 +41,10 @@ while True:
         print(f"Database connection failed.\nError: {e}")
         sleep(2)
         print("Trying again...")
+
+# declare routers for queries forwarding
+app.include_router(posts.router, prefix="/posts")
+app.include_router(users.router, prefix="/users")
 
 
 @app.get("/")
