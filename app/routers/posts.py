@@ -3,7 +3,7 @@ from fastapi import Response, status, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
-from .. import models, schemas
+from .. import models, schemas, oauth2
 from ..database import get_db
 
 # define router
@@ -18,7 +18,8 @@ def get_posts(db: Session = Depends(get_db)):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
-def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
+def create_post(post: schemas.PostCreate, db: Session = Depends(get_db),
+                verify_user: int = Depends(oauth2.verify_current_user)):
     # insert single post
     created_post = models.Post(**dict(post))    # unpack class as dictionary for easier input
     db.add(created_post)
@@ -48,7 +49,8 @@ def get_post(id_: int, db: Session = Depends(get_db)):
 
 
 @router.delete("/{id_}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id_: int, db: Session = Depends(get_db)):
+def delete_post(id_: int, db: Session = Depends(get_db),
+                verify_user: int = Depends(oauth2.verify_current_user)):
     # find post for deletion by id
     deleted_post = db.query(models.Post).filter(models.Post.id == id_)
     # return 404 if post was not found
@@ -63,7 +65,8 @@ def delete_post(id_: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{id_}", response_model=schemas.Post)
-def update_post(id_: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
+def update_post(id_: int, post: schemas.PostCreate, db: Session = Depends(get_db),
+                verify_user: int = Depends(oauth2.verify_current_user)):
     # find post by id
     updated_post = db.query(models.Post).filter_by(id=id_)
     # return 404 if post was not found

@@ -1,5 +1,10 @@
-"""Post schemas"""
+"""Post schemas
+
+Basic validations of
+what user can get and send as request
+"""
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr
 
@@ -27,6 +32,7 @@ class Post(PostBase):
 
 
 class UserCreate(BaseModel):
+    """Scheme for creating new user"""
     email: EmailStr
     password: str
 
@@ -42,6 +48,12 @@ class UserResponse(BaseModel):
         orm_mode = True
 
 
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
+class Token(BaseModel):
+    """Response JWT scheme"""
+    token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    """Scheme for token that verify user rights"""
+    user_id: Optional[str] = None

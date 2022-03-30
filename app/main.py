@@ -6,14 +6,17 @@ API that allow users to exchange posts on
 social media simulation
 """
 # TODO documentation
+# TODO fetch only published posts
 
 from time import sleep
+from os import getenv
 
 from fastapi import FastAPI
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
 
-from .database import Base, engine, load_dotenv, getenv
+from .database import Base, engine
 from .routers import posts, users, auth
 
 load_dotenv()
