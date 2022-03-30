@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=list[schemas.Post])
-def get_posts(db: Session = Depends(get_db)):
+def get_posts(db: Session = Depends(get_db)) -> list[schemas.Post]:
     # fetch all existing posts
     posts = db.query(models.Post).all()
     return posts
@@ -19,7 +19,7 @@ def get_posts(db: Session = Depends(get_db)):
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 def create_post(post: schemas.PostCreate, db: Session = Depends(get_db),
-                verify_user: int = Depends(oauth2.verify_current_user)):
+                verify_user: int = Depends(oauth2.verify_current_user)) -> schemas.Post:
     # insert single post
     created_post = models.Post(**dict(post))    # unpack class as dictionary for easier input
     db.add(created_post)
@@ -31,14 +31,14 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(get_db),
 
 
 @router.get("/latest", response_model=schemas.Post)
-def get_latest_post(db: Session = Depends(get_db)):
+def get_latest_post(db: Session = Depends(get_db)) -> schemas.Post:
     # get last inserted post
     latest_post = db.query(models.Post).order_by(desc(models.Post.id)).first()
     return latest_post
 
 
 @router.get("/{id_}", response_model=schemas.Post)
-def get_post(id_: int, db: Session = Depends(get_db)):
+def get_post(id_: int, db: Session = Depends(get_db)) -> schemas.Post:
     # find post by id
     found_post = db.query(models.Post).filter(models.Post.id == id_).first()
     # return 404 if post was not found
@@ -66,7 +66,7 @@ def delete_post(id_: int, db: Session = Depends(get_db),
 
 @router.put("/{id_}", response_model=schemas.Post)
 def update_post(id_: int, post: schemas.PostCreate, db: Session = Depends(get_db),
-                verify_user: int = Depends(oauth2.verify_current_user)):
+                verify_user: int = Depends(oauth2.verify_current_user)) -> schemas.Post:
     # find post by id
     updated_post = db.query(models.Post).filter_by(id=id_)
     # return 404 if post was not found

@@ -5,8 +5,6 @@ Using: FastAPI, Progresql database
 API that allow users to exchange posts on
 social media simulation
 """
-# TODO documentation
-# TODO fetch only published posts
 
 from time import sleep
 from os import getenv
@@ -53,4 +51,5 @@ app.include_router(auth.router,  tags=["Users"])
 
 @app.get("/")
 def home_page():
+    """Root page"""
     return {"message": "Hi :)"}

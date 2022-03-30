@@ -10,7 +10,15 @@ router = APIRouter()
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> schemas.UserResponse:
+    """Add new user into the database
+
+    Hashing user password
+
+    :param user: scheme of user
+    :param db: database dependency
+    :return: user response scheme
+    """
     # save hashed password
     user.password = utils.hash_password(user.password)
     # create single user
@@ -24,7 +32,13 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/{id_}", response_model=schemas.UserResponse)
-def get_user(id_: int, db: Session = Depends(get_db)):
+def get_user(id_: int, db: Session = Depends(get_db)) -> schemas.UserResponse:
+    """Get user details by his id
+
+    :param id_: id of user to find
+    :param db: database dependency
+    :return: user response scheme
+    """
     # get user by id
     user = db.query(models.User).filter_by(id=id_).first()
     # return 404 if user id was not found

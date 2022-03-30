@@ -14,7 +14,7 @@ def hash_password(password: str):
     return pwd_context.hash(password)
 
 
-def verify_password(password: str, hashed_password: str):
+def verify_password(password: str, hashed_password: str) -> bool:
     """Check if given password is the same as hashed
      by hashing and comparing it
 
