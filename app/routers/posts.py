@@ -19,9 +19,9 @@ def get_posts(db: Session = Depends(get_db)) -> list[schemas.Post]:
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 def create_post(post: schemas.PostCreate, db: Session = Depends(get_db),
-                verify_user: int = Depends(oauth2.verify_current_user)) -> schemas.Post:
+                verify_user: models.User = Depends(oauth2.verify_current_user)) -> schemas.Post:
     # insert single post
-    created_post = models.Post(**dict(post))    # unpack class as dictionary for easier input
+    created_post = models.Post(**dict(post), owner_id=verify_user.id)      # unpack class as dict for easier input
     db.add(created_post)
     # commit changes into database
     db.commit()

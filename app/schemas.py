@@ -25,6 +25,7 @@ class Post(PostBase):
     """Scheme for response as post"""
     id: int
     created_at: datetime
+    owner_id: int
 
     class Config:
         """Also trying to get information as attribute (id = data.id)"""

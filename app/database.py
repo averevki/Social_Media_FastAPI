@@ -22,6 +22,7 @@ Base = declarative_base()
 
 
 def get_db():
+    """Virtual database instance"""
     db = SessionLocal()
     try:
         yield db
