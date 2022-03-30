@@ -12,3 +12,14 @@ def hash_password(password: str):
     :return: hashed password
     """
     return pwd_context.hash(password)
+
+
+def verify_password(password: str, hashed_password: str):
+    """Check if given password is the same as hashed
+     by hashing and comparing it
+
+    :param password: password to verify
+    :param hashed_password: stored hashed password
+    :return: True if hashed password is the same, False otherwise
+    """
+    return pwd_context.verify(password, hashed_password)

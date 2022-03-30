@@ -14,7 +14,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 from .database import Base, engine, load_dotenv, getenv
-from .routers import posts, users
+from .routers import posts, users, auth
 
 load_dotenv()
 
@@ -43,10 +43,11 @@ while True:
         print("Trying again...")
 
 # declare routers for queries forwarding
-app.include_router(posts.router, prefix="/posts")
-app.include_router(users.router, prefix="/users")
+app.include_router(posts.router, prefix="/posts", tags=["Posts"])
+app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(auth.router,  tags=["Users"])
 
 
 @app.get("/")
-def root():
+def home_page():
     return {"message": "Hi :)"}

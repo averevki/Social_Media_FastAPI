@@ -40,3 +40,8 @@ class UserResponse(BaseModel):
     class Config:
         """Also trying to get information as attribute (id = data.id)"""
         orm_mode = True
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
