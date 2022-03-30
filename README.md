@@ -6,7 +6,6 @@ social media simulation
 - documentation
 - posts docstrings
 - fetch only published posts
-- single users verification
 
 ### Used technologies
 - TODO

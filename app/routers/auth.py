@@ -3,15 +3,14 @@ from fastapi import status, HTTPException, Depends, APIRouter
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from .. import models, schemas, oauth2, utils
-from ..database import get_db
+from .. import database, models, schemas, oauth2, utils
 
 # declare router
 router = APIRouter()
 
 
 @router.post("/login", response_model=schemas.Token)
-def user_login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def user_login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
     """Give user JWT for access to post operations
 
     OAuth2PasswordRequestForm getting data as form: {"username": "...", "password": "..."}
