@@ -5,29 +5,39 @@ from sqlalchemy import desc
 
 from .. import database, models, schemas, oauth2
 
-# define router
+# declare router
 router = APIRouter()
 
 
 @router.get("/", response_model=list[schemas.Post])
-def get_posts(db: Session = Depends(database.get_db)) -> list[schemas.Post]:
+def get_posts(db: Session = Depends(database.get_db),
+              limit: int = 10, skip: int = 0, search: str = "") -> list[schemas.Post]:
     # fetch all existing, published posts
-    posts = db.query(models.Post).filter_by(published="TRUE").all()
+    posts = db.query(models.Post)\
+        .filter(models.Post.title.contains(search), models.Post.published == "TRUE")\
+        .order_by(desc(models.Post.created_at))\
+        .limit(limit).offset(skip).all()
     return posts
 
 
 @router.get("/my", response_model=list[schemas.Post])
 def get_posts_my(db: Session = Depends(database.get_db),
-                 verify_user: models.User = Depends(oauth2.verify_current_user)) -> list[schemas.Post]:
+                 verify_user: models.User = Depends(oauth2.verify_current_user),
+                 limit: int = 10, skip: int = 0, search: str = "") -> list[schemas.Post]:
     # fetch all user posts
-    posts = db.query(models.Post).filter_by(owner_id=verify_user.id).all()
+    posts = db.query(models.Post)\
+        .filter(models.Post.title.contains(search), models.Post.owner_id == verify_user.id)\
+        .order_by(desc(models.Post.created_at))\
+        .limit(limit).offset(skip).all()
     return posts
 
 
 @router.get("/latest", response_model=schemas.Post)
 def get_latest_post(db: Session = Depends(database.get_db)) -> schemas.Post:
     # get last posted
-    latest_post = db.query(models.Post).filter_by(published="TRUE").order_by(desc(models.Post.created_at)).first()
+    latest_post = db.query(models.Post)\
+        .filter_by(published="TRUE")\
+        .order_by(desc(models.Post.created_at)).first()
     return latest_post
 
 
