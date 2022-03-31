@@ -9,6 +9,23 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
+class UserCreate(BaseModel):
+    """Scheme for creating new user"""
+    email: EmailStr
+    password: str
+
+
+class UserResponse(BaseModel):
+    """Scheme for response to new user creation"""
+    id: int
+    email: EmailStr
+    created_at: datetime
+
+    class Config:
+        """Also trying to get information as attribute (id = data.id)"""
+        orm_mode = True
+
+
 class PostBase(BaseModel):
     """Base post scheme"""
     title: str
@@ -26,23 +43,7 @@ class Post(PostBase):
     id: int
     created_at: datetime
     owner_id: int
-
-    class Config:
-        """Also trying to get information as attribute (id = data.id)"""
-        orm_mode = True
-
-
-class UserCreate(BaseModel):
-    """Scheme for creating new user"""
-    email: EmailStr
-    password: str
-
-
-class UserResponse(BaseModel):
-    """Scheme for response to new user creation"""
-    id: int
-    email: EmailStr
-    created_at: datetime
+    owner: UserResponse
 
     class Config:
         """Also trying to get information as attribute (id = data.id)"""
