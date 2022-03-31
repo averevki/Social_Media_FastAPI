@@ -1,19 +1,16 @@
 """JWT (JSON web token) generation and validations"""
 from datetime import datetime, timedelta
-from os import getenv
 
 from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from sqlalchemy.orm import Session
-from dotenv import load_dotenv
 
 from . import schemas, database, models
+from .config import settings
 
-load_dotenv()
-
-SECRET_KEY = getenv("JWT_ENCODE_KEY")
-ALGORITHM = getenv("JWT_ALGORITHM")
+SECRET_KEY = settings.jwt_encode_key
+ALGORITHM = settings.jwt_algorithm
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # declare oauth2 scheme

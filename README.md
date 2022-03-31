@@ -5,7 +5,7 @@ social media simulation
 ### TODO's
 - documentation
 - posts docstrings
-- fetch only published posts
+- publish post feature
 
 ### Used technologies
 - TODO
