@@ -49,6 +49,15 @@ class Post(PostBase):
         orm_mode = True
 
 
+class PostResponse(BaseModel):
+    Post: Post
+    likes: int
+
+    class Config:
+        """Also trying to get information as attribute (id = data.id)"""
+        orm_mode = True
+
+
 class Token(BaseModel):
     """Response JWT scheme"""
     token: str

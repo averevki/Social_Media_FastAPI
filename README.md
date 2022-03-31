@@ -7,6 +7,7 @@ social media simulation
 - docstrings
 - publish post feature
 - dislike feature (direction: -1)
+- account already exist validation
 
 ### Used technologies
 - TODO
