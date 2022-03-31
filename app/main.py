@@ -10,7 +10,7 @@ social media simulation
 from fastapi import FastAPI
 
 from .database import Base, engine
-from .routers import posts, users, auth
+from .routers import posts, users, auth, ratings
 
 __author__ = "Aleksandr Verevkin"
 __license__ = "GNU GPL v.3"
@@ -25,6 +25,7 @@ app = FastAPI()
 app.include_router(posts.router, prefix="/posts", tags=["Posts"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(auth.router,  tags=["Users"])
+app.include_router(ratings.router, prefix="/rate", tags=["Ratings"])
 
 
 @app.get("/")

@@ -4,7 +4,7 @@ Basic validations of
 what user can get and send as request
 """
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Literal
 
 from pydantic import BaseModel, EmailStr
 
@@ -42,7 +42,6 @@ class Post(PostBase):
     """Scheme for response as post"""
     id: int
     created_at: datetime
-    owner_id: int
     owner: UserResponse
 
     class Config:
@@ -59,3 +58,8 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     """Scheme for token that verify user rights"""
     user_id: Optional[str] = None
+
+
+class Rate(BaseModel):
+    post_id: int
+    dir: Literal[0, 1]  # direction: 0 - remove, 1 - add

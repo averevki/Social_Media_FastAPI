@@ -4,8 +4,9 @@ social media simulation
 
 ### TODO's
 - documentation
-- posts docstrings
+- docstrings
 - publish post feature
+- dislike feature (direction: -1)
 
 ### Used technologies
 - TODO
