@@ -6,7 +6,6 @@ class Settings(BaseSettings):
     """Environment variables"""
     host: str = "localhost"
     port: str = "5432"
-    database: str = "postgresql"
     db_name: str
     db_user: str = "postgres"
     db_password: str
