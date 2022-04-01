@@ -20,7 +20,7 @@ def rate_post(rate: schemas.Rate, db: Session = Depends(database.get_db),
                             detail=f"post was not found (id: {rate.post_id})")
     if post.owner_id == verified_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail=f"you can't rate your own post")
+                            detail="you can't rate your own post")
     # found rating
     rating = db.query(models.Rating)\
         .filter(models.Rating.post_id == rate.post_id, models.Rating.user_id == verified_user.id)

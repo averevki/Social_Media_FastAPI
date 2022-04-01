@@ -3,3 +3,4 @@ SQLAlchemy~=1.4.32
 passlib~=1.7.4
 pydantic~=1.9.0
 alembic~=1.7.7
+uvicorn~=0.15.0
