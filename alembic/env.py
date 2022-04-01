@@ -13,8 +13,10 @@ config = context.config
 # config.set_main_option("sqlalchemy.url",
 #                        f"postgresql://{settings.db_user}:{settings.db_password}"
 #                        f"@{settings.host}:{settings.port}/{settings.db_name}")
-config.set_main_option("sqlalchemy.url",
-                       settings.database_url)
+uri = settings.database_url
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+config.set_main_option("sqlalchemy.url", uri)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

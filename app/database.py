@@ -11,7 +11,10 @@ host = settings.host
 port = settings.port
 db_name = settings.db_name
 
-SQLALCHEMY_DB_URL = settings.database_url
+uri = settings.database_url
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+SQLALCHEMY_DB_URL = uri
 # SQLALCHEMY_DB_URL = f"postgresql://{username}:{password}@{host}:{port}/{db_name}"
 engine = create_engine(SQLALCHEMY_DB_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
