@@ -8,6 +8,7 @@ social media simulation
 """
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from .database import Base, engine
 from .routers import posts, users, auth, ratings
@@ -21,6 +22,15 @@ __maintainer__ = "Aleksandr Verevkin"
 
 # API instance
 app = FastAPI()
+# CORS setup
+origins = ["*"]     # list of allowed origins (["*"] - all)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # declare routers for queries forwarding
 app.include_router(posts.router, prefix="/posts", tags=["Posts"])
