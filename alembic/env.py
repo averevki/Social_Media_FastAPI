@@ -10,13 +10,16 @@ from app.config import settings
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-# config.set_main_option("sqlalchemy.url",
-#                        f"postgresql://{settings.db_user}:{settings.db_password}"
-#                        f"@{settings.host}:{settings.port}/{settings.db_name}")
-uri = settings.database_url
-if uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
-config.set_main_option("sqlalchemy.url", uri)
+# for deployment server
+if settings.database_url is not None:
+    uri = settings.database_url
+    if uri.startswith("postgres://"):
+        uri = uri.replace("postgres://", "postgresql://", 1)
+    config.set_main_option("sqlalchemy.url", uri)
+else:       # for development
+    config.set_main_option("sqlalchemy.url",
+                           f"{settings.database}://{settings.db_user}:{settings.db_password}"
+                           f"@{settings.host}:{settings.port}/{settings.db_name}")
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
