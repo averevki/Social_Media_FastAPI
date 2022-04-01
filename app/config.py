@@ -4,6 +4,8 @@ from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     """Environment variables"""
+    database_url: str = ""
+
     host: str = "localhost"
     port: str = "5432"
     db_name: str
