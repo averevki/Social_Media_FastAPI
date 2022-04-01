@@ -8,10 +8,11 @@ from .config import settings
 database = settings.database
 username = settings.db_user
 password = settings.db_password
-port = settings.host
+host = settings.host
+port = settings.port
 db_name = settings.db_name
 
-SQLALCHEMY_DB_URL = f"{database}://{username}:{password}@{port}/{db_name}"
+SQLALCHEMY_DB_URL = f"{database}://{username}:{password}@{host}:{port}/{db_name}"
 engine = create_engine(SQLALCHEMY_DB_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
