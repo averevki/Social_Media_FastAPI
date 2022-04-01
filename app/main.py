@@ -17,7 +17,8 @@ __license__ = "GNU GPL v.3"
 __status__ = "production"
 __maintainer__ = "Aleksandr Verevkin"
 
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)     # manual creation of databases
+
 # API instance
 app = FastAPI()
 
