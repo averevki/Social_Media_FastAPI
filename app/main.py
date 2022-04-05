@@ -1,7 +1,7 @@
 """Social media API
 
 Using: FastAPI framework,
-ProgreSQl database, SQLAlchemy ORM
+PostgreSQl database, SQLAlchemy ORM, alembic as database migration tool
 
 API that allow users to exchange posts on
 social media simulation
@@ -42,4 +42,4 @@ app.include_router(ratings.router, prefix="/rate", tags=["Ratings"])
 @app.get("/")
 def home_page():
     """Root page"""
-    return {"message": "Hi :)"}
+    return {"message": "Hello :)"}
