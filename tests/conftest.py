@@ -1,3 +1,4 @@
+"""Pytest fixtures"""
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -13,7 +14,7 @@ engine = create_engine(SQLALCHEMY_DB_URL)
 TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def db_session():
     """Initializing testing database for possible future manipulations"""
     Base.metadata.drop_all(bind=engine)  # drop all existing tables
@@ -25,7 +26,7 @@ def db_session():
         db.close()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def client(db_session):
     """Initializing of fastapi test client"""
     def override_get_db():
@@ -36,3 +37,13 @@ def client(db_session):
     app.dependency_overrides[get_db] = override_get_db  # override database
     yield TestClient(app)
 
+
+@pytest.fixture
+def user(client):
+    credentials = {"email": "testmail@gmail.com",
+                   "password": "test_password123"}
+    res = client.post("/users/", json=credentials)
+    assert res.status_code == 201
+    new_user = res.json()
+    new_user["password"] = credentials["password"]
+    return new_user

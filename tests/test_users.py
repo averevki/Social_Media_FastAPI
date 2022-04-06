@@ -1,13 +1,8 @@
-import pytest
+"""Users query tests"""
+from jose import jwt
 
 from app import schemas
-from .db_setup import client, db_session
-
-
-def test_root(client):
-    res = client.get("/")
-    assert res.status_code == 200
-    assert res.json().get("message") == "Hello :)"
+from app.config import settings
 
 
 def test_user_create(client):
@@ -16,3 +11,13 @@ def test_user_create(client):
     new_user = schemas.UserResponse(**res.json())  # user response scheme validation
     assert res.status_code == 201
     assert new_user.email == "testmail@gmail.com"
+
+
+def test_user_login(client, user):
+    res = client.post("/login", data={"username": user["email"],
+                                      "password": user["password"]})
+    assert res.status_code == 200
+    login_res = schemas.Token(**res.json())
+    payload = jwt.decode(login_res.token, settings.jwt_encode_key, algorithms=[settings.jwt_algorithm])
+    assert login_res.token_type == "bearer"
+    assert payload["user_id"] == user["id"]
