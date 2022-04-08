@@ -4,6 +4,17 @@ on: [push, pull_request]
 
 jobs:
   job1:
+    environment:
+      name: testing
+    env:
+      HOST: ${{secrets.HOST}}
+      PORT: ${{secrets.PORT}}
+      DATABASE: ${{secrets.DATABASE}}
+      DB_NAME: ${{secrets.DB_NAME}}
+      DB_USER: ${{secrets.DB_USER}}
+      DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+      JWT_ENCODE_KEY: ${{secrets.JWT_ENCODE_KEY}}
+      JWT_ALGORITHM: ${{secrets.JWT_ALGORITHM}}
     runs-on: ubuntu-latest
     steps:
       - name: pull git repository
