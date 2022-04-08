@@ -15,6 +15,17 @@ jobs:
       DB_PASSWORD: ${{secrets.DB_PASSWORD}}
       JWT_ENCODE_KEY: ${{secrets.JWT_ENCODE_KEY}}
       JWT_ALGORITHM: ${{secrets.JWT_ALGORITHM}}
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: ${{secrets.DB_PASSWORD}}
+          POSTGRES_DB: ${{secrets.DB_NAME}}_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     runs-on: ubuntu-latest
     steps:
       - name: pull git repository
@@ -28,4 +39,4 @@ jobs:
       - name: install requirements
         run: pip install -r requirements.txt
       - name: run tests
-        run: pytest
+        run: pytest tests/
