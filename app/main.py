@@ -42,4 +42,4 @@ app.include_router(ratings.router, prefix="/rate", tags=["Ratings"])
 @app.get("/")
 def home_page():
     """Root page"""
-    return {"message": "Hello :)"}
+    return {"message": "Hello there :)"}
