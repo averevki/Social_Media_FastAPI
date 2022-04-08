@@ -53,6 +53,17 @@ def user(client):
 
 
 @pytest.fixture
+def user2(client):
+    credentials = {"email": "testmail2@gmail.com",
+                   "password": "test_password123"}
+    res = client.post("/users/", json=credentials)
+    assert res.status_code == 201
+    new_user = res.json()
+    new_user["password"] = credentials["password"]
+    return new_user
+
+
+@pytest.fixture
 def token(user):
     return create_access_token(data={"user_id": user["id"]})
 
@@ -67,7 +78,7 @@ def authorized_client(client, token):
 
 
 @pytest.fixture
-def add_test_posts(user, db_session):
+def add_test_posts(user, user2, db_session):
     posts = [
         {
             "title": "My first post",
@@ -83,6 +94,11 @@ def add_test_posts(user, db_session):
             "title": "I love tigers",
             "content": "Tigers are great",
             "owner_id": user.get("id")
+        },
+        {
+            "title": "Second user post",
+            "content": "Hi, I'm second user",
+            "owner_id": user2.get("id")
         }
     ]
     # add all new posts into the database
