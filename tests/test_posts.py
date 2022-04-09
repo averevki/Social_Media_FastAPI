@@ -31,6 +31,7 @@ def test_get_latest_post(client, add_test_posts):
     assert latest_post.Post.content == add_test_posts[-1].content
     assert latest_post.Post.owner.id == add_test_posts[-1].owner_id
 
+
 @pytest.mark.parametrize("post_id", [30, 120, 99999])
 def test_get_not_existing_post(authorized_client, add_test_posts, post_id):
     res = authorized_client.get(f"/posts/{post_id}")
@@ -49,6 +50,37 @@ def test_get_post_by_id(authorized_client, add_test_posts, post_number):
     assert post.Post.content == add_test_posts[post_number].content
 
 
+@pytest.mark.parametrize("post_id", [1, 2, 4, 999])
+def test_change_post_visibility_unauthorized(client, add_test_posts, post_id):
+    res = client.put(f"/posts/publish/{post_id}")
+    assert res.status_code == 401
+    assert res.json()["detail"] == "Not authenticated"
+
+
+@pytest.mark.parametrize("post_index", [0, 1, 2])
+def test_change_post_visibility(authorized_client, user, add_test_posts, post_index):
+    post_id = add_test_posts[post_index].id
+    res = authorized_client.put(f"/posts/publish/{post_id}")
+    assert res.status_code == 200
+    assert res.json()["detail"] == f"post was successfully unpublished (id: {post_id})"
+    res = authorized_client.put(f"/posts/publish/{post_id}")
+    assert res.status_code == 200
+    assert res.json()["detail"] == f"post was successfully published (id: {post_id})"
+
+
+def test_change_foreign_post_visibility(authorized_client, add_test_posts):
+    res = authorized_client.put(f"/posts/publish/{add_test_posts[3].id}")
+    assert res.status_code == 403
+    assert res.json()["detail"] == "unauthorized action"
+
+
+@pytest.mark.parametrize("post_id", [30, 120, 9999999])
+def test_change_visibility_not_existing_post(authorized_client, add_test_posts, post_id):
+    res = authorized_client.put(f"/posts/publish/{post_id}")
+    assert res.status_code == 404
+    assert res.json()["detail"] == f"post was not found (id: {post_id})"
+
+
 @pytest.mark.parametrize("published", [True, False])
 def test_create_post_unauthorized(client, add_test_posts, published):
     res = client.post(f"/posts/", json={"title": "Anonymous title",
@@ -56,6 +88,7 @@ def test_create_post_unauthorized(client, add_test_posts, published):
                                         "published": published})
     assert res.status_code == 401
     assert res.json()["detail"] == "Not authenticated"
+
 
 @pytest.mark.parametrize("title, content, published", [
     ("New post", "About me", True),
