@@ -2,8 +2,14 @@
 import pytest
 from jose import jwt
 
-from app import schemas
+from app import schemas, models
 from app.config import settings
+
+
+@pytest.fixture
+def registered_user(client):
+    res = client.post("/users/", json={"email": "already@exist.com",
+                                       "password": "test_password123"})
 
 
 def test_user_create(client):
@@ -12,6 +18,13 @@ def test_user_create(client):
     new_user = schemas.UserResponse(**res.json())  # user response scheme validation
     assert res.status_code == 201
     assert new_user.email == "testmail@gmail.com"
+
+
+def test_user_create_already_exist(client, registered_user):
+    res = client.post("/users/", json={"email": "already@exist.com",
+                                       "password": "test_password123"})
+    assert res.status_code == 409
+    assert res.json()["detail"] == "email already registered (email: already@exist.com)"
 
 
 def test_user_login(client, user):

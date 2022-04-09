@@ -5,9 +5,9 @@ social media simulation
 ### TODO's
 - documentation
 - docstrings
-- publish post feature
 - dislike feature (direction: -1)
 - account already exist validation
+- email and password regex check
 
 ### Used technologies
 - TODO
