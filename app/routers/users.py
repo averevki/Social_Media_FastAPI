@@ -20,6 +20,11 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)
     """
     # save hashed password
     user.password = utils.hash_password(user.password)
+    # check if email already registered
+    existence = db.query(models.User).filter(models.User.email == user.email).first()
+    if existence is not None:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail=f"email already registered (email: {user.email})")
     # create single user
     new_user = models.User(**dict(user))  # unpack class as dictionary for easier input
     db.add(new_user)
