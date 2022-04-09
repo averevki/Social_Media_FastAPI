@@ -14,13 +14,13 @@ def get_posts(db: Session = Depends(database.get_db),
               limit: int = 10, skip: int = 0, search: str = "") -> list[schemas.PostResponse]:
     """Fetch all published posts"""
     # fetch all existing, published posts
-    posts = db.query(models.Post, func.count(models.Rating.post_id).label("likes"))\
+    all_posts = db.query(models.Post, func.count(models.Rating.post_id).label("likes"))\
         .join(models.Rating, models.Rating.post_id == models.Post.id, isouter=True)\
         .group_by(models.Post.id)\
         .filter(models.Post.title.contains(search), models.Post.published == "TRUE")\
         .order_by(desc(models.Post.created_at))\
         .limit(limit).offset(skip).all()
-    return posts
+    return all_posts
 
 
 @router.get("/my", response_model=list[schemas.PostResponse])
@@ -29,13 +29,13 @@ def get_posts_my(db: Session = Depends(database.get_db),
                  limit: int = 10, skip: int = 0, search: str = "") -> list[schemas.PostResponse]:
     """Fetch all your posts, published and unpublished"""
     # fetch all user posts
-    posts = db.query(models.Post, func.count(models.Rating.post_id).label("likes"))\
+    my_posts = db.query(models.Post, func.count(models.Rating.post_id).label("likes"))\
         .join(models.Rating, models.Rating.post_id == models.Post.id, isouter=True)\
         .group_by(models.Post.id)\
         .filter(models.Post.title.contains(search), models.Post.owner_id == verified_user.id)\
         .order_by(desc(models.Post.created_at))\
         .limit(limit).offset(skip).all()
-    return posts
+    return my_posts
 
 
 @router.get("/latest", response_model=schemas.PostResponse)
@@ -114,8 +114,8 @@ def delete_post(id_: int, db: Session = Depends(database.get_db),
                 verified_user: models.User = Depends(oauth2.verify_current_user)) -> Response:
     """Delete your post"""
     # find post for deletion by id
-    deleted_post = db.query(models.Post).filter(models.Post.id == id_)
-    post = deleted_post.first()
+    post_to_delete = db.query(models.Post).filter(models.Post.id == id_)
+    post = post_to_delete.first()
     # return 404 if post was not found
     if post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -125,7 +125,7 @@ def delete_post(id_: int, db: Session = Depends(database.get_db),
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="unauthorized action")
     # if deleted post exist - delete
-    deleted_post.delete(synchronize_session=False)
+    post_to_delete.delete(synchronize_session=False)
     # commit changes into database
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -136,8 +136,8 @@ def update_post(id_: int, post: schemas.PostCreate, db: Session = Depends(databa
                 verified_user: models.User = Depends(oauth2.verify_current_user)) -> schemas.PostResponse:
     """Update your post"""
     # find post by id
-    updated_post = db.query(models.Post).filter_by(id=id_)
-    fetched_post = updated_post.first()
+    post_to_update = db.query(models.Post).filter_by(id=id_)
+    fetched_post = post_to_update.first()
     # return 404 if post was not found
     if fetched_post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -146,12 +146,12 @@ def update_post(id_: int, post: schemas.PostCreate, db: Session = Depends(databa
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="unauthorized action")
     # if updated post exist, update it
-    updated_post.update(dict(post), synchronize_session=False)
+    post_to_update.update(dict(post), synchronize_session=False)
     # commit database changes
     db.commit()
     # fetch updated post for respond
-    updated_post = db.query(models.Post, func.count(models.Rating.post_id).label("likes"))\
+    post_to_update = db.query(models.Post, func.count(models.Rating.post_id).label("likes"))\
         .join(models.Rating, models.Rating.post_id == models.Post.id, isouter=True)\
         .group_by(models.Post.id)\
         .filter(models.Post.id == id_).first()
-    return updated_post
+    return post_to_update

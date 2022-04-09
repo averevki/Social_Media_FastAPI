@@ -2,7 +2,7 @@
 API that allows users to exchange posts on
 social media simulation
 
-## Try out yourself!
+## Try it yourself!
 API is deployed on heroku: <br/>
 https://social-media-api-verevkin.herokuapp.com/posts <br/>
 Interactive documentation: <br/>
