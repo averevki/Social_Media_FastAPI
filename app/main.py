@@ -4,8 +4,8 @@ API that allow users to exchange posts on
 social media simulation
 
 Using: FastAPI framework,
-PostgreSQl database, SQLAlchemy ORM, alembic as database migration tool,
-OAuth2 and JWN tokens for users authentication.
+PostgreSQL database, SQLAlchemy ORM, alembic as database migration tool,
+OAuth2 and JWTokens for users authentication.
 
 Application is dockerized and deployed on heroku
 link: social-media-api-verevkin.herokuapp.com/

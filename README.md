@@ -87,7 +87,7 @@ output:
 
 ## Used technologies
 - FastAPI framework
-- PostgreSQl database
+- PostgreSQL database
 - SQLAlchemy ORM
 - Alembic as database migration tool
 - OAuth2 and JWTokens for users authentication
