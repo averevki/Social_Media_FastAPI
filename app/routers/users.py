@@ -1,4 +1,6 @@
 """Router with user queries"""
+import re
+
 from fastapi import status, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 
@@ -6,6 +8,8 @@ from .. import database, utils, models, schemas
 
 # declare router
 router = APIRouter()
+
+PASSWORD_REGEX = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)
@@ -18,6 +22,10 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)
     :param db: database dependency
     :return: user response scheme
     """
+    if re.match(PASSWORD_REGEX, user.password) is None:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                            detail=f"password must contain at least 8 characters, one uppercase letter, "
+                                   f"one lowercase letter, one number and one special character")
     # save hashed password
     user.password = utils.hash_password(user.password)
     # check if email already registered

@@ -44,7 +44,7 @@ def client(db_session):
 @pytest.fixture
 def user(client):
     credentials = {"email": "testmail@gmail.com",
-                   "password": "test_password123"}
+                   "password": "TestPassword123!"}
     res = client.post("/users/", json=credentials)
     assert res.status_code == 201
     new_user = res.json()
@@ -55,7 +55,7 @@ def user(client):
 @pytest.fixture
 def user2(client):
     credentials = {"email": "testmail2@gmail.com",
-                   "password": "test_password123"}
+                   "password": "TestPassword123!"}
     res = client.post("/users/", json=credentials)
     assert res.status_code == 201
     new_user = res.json()
