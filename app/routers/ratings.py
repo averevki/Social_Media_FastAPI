@@ -12,6 +12,7 @@ router = APIRouter()
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def rate_post(rate: schemas.Rate, db: Session = Depends(database.get_db),
               verified_user: models.User = Depends(oauth2.verify_current_user)) -> dict:
+    """Add or remove like from foreign post"""
     # firstly check if post exist and user have sufficient rights
     post: Optional[models.Post] = db.query(models.Post)\
         .filter(models.Post.id == rate.post_id, models.Post.published == "TRUE").first()

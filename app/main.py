@@ -1,10 +1,18 @@
 """Social media API
 
-Using: FastAPI framework,
-PostgreSQl database, SQLAlchemy ORM, alembic as database migration tool
-
 API that allow users to exchange posts on
 social media simulation
+
+Using: FastAPI framework,
+PostgreSQl database, SQLAlchemy ORM, alembic as database migration tool,
+OAuth2 and JWN tokens for users authentication.
+
+Application is dockerized and deployed on heroku
+link: social-media-api-verevkin.herokuapp.com/
+
+Each query provided with pytest tests
+
+Application is automized for CI/CD workflow with GitHub actions
 """
 
 from fastapi import FastAPI
@@ -15,7 +23,7 @@ from .routers import posts, users, auth, ratings
 
 __author__ = "Aleksandr Verevkin"
 __license__ = "GNU GPL v.3"
-__status__ = "production"
+__status__ = "maintenance"
 __maintainer__ = "Aleksandr Verevkin"
 
 # Base.metadata.create_all(bind=engine)     # manual creation of databases
@@ -39,7 +47,7 @@ app.include_router(auth.router,  tags=["Users"])
 app.include_router(ratings.router, prefix="/rate", tags=["Ratings"])
 
 
-@app.get("/")
-def home_page():
+@app.get("/", tags=["General"])
+def home_page() -> dict:
     """Root page"""
-    return {"message": "Hello there :)"}
+    return {"message": "Hello there :) Available queries -> /posts /users /rate"}

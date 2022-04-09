@@ -50,6 +50,7 @@ class Post(PostBase):
 
 
 class PostResponse(BaseModel):
+    """Post schema for showing to users"""
     Post: Post
     likes: int
 
@@ -70,5 +71,6 @@ class TokenData(BaseModel):
 
 
 class Rate(BaseModel):
+    """Schema for users rate query"""
     post_id: int
     dir: Literal[0, 1]  # direction: 0 - remove, 1 - add

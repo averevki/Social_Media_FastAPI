@@ -15,9 +15,9 @@ if settings.database_url is not None:
 else:       # for development
     SQLALCHEMY_DB_URL = f"{settings.database}://{settings.db_user}:{settings.db_password}" \
                         f"@{settings.host}:{settings.port}/{settings.db_name}"
+
 engine = create_engine(SQLALCHEMY_DB_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 Base = declarative_base()
 
 

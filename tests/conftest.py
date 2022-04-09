@@ -43,6 +43,7 @@ def client(db_session):
 
 @pytest.fixture
 def user(client):
+    """Create user"""
     credentials = {"email": "testmail@gmail.com",
                    "password": "TestPassword123!"}
     res = client.post("/users/", json=credentials)
@@ -54,6 +55,7 @@ def user(client):
 
 @pytest.fixture
 def user2(client):
+    """Create second user"""
     credentials = {"email": "testmail2@gmail.com",
                    "password": "TestPassword123!"}
     res = client.post("/users/", json=credentials)
@@ -65,11 +67,13 @@ def user2(client):
 
 @pytest.fixture
 def token(user):
+    """Create access token"""
     return create_access_token(data={"user_id": user["id"]})
 
 
 @pytest.fixture
 def authorized_client(client, token):
+    """Authorize user with token"""
     client.headers = {      # appending token to query headers
         **client.headers,
         "Authorization": f"Bearer {token}"
@@ -79,6 +83,7 @@ def authorized_client(client, token):
 
 @pytest.fixture
 def add_test_posts(user, user2, db_session):
+    """Add test posts from different users"""
     posts = [
         {
             "title": "My first post",

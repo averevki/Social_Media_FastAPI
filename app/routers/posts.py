@@ -12,6 +12,7 @@ router = APIRouter()
 @router.get("/", response_model=list[schemas.PostResponse])
 def get_posts(db: Session = Depends(database.get_db),
               limit: int = 10, skip: int = 0, search: str = "") -> list[schemas.PostResponse]:
+    """Fetch all published posts"""
     # fetch all existing, published posts
     posts = db.query(models.Post, func.count(models.Rating.post_id).label("likes"))\
         .join(models.Rating, models.Rating.post_id == models.Post.id, isouter=True)\
@@ -26,6 +27,7 @@ def get_posts(db: Session = Depends(database.get_db),
 def get_posts_my(db: Session = Depends(database.get_db),
                  verified_user: models.User = Depends(oauth2.verify_current_user),
                  limit: int = 10, skip: int = 0, search: str = "") -> list[schemas.PostResponse]:
+    """Fetch all your posts, published and unpublished"""
     # fetch all user posts
     posts = db.query(models.Post, func.count(models.Rating.post_id).label("likes"))\
         .join(models.Rating, models.Rating.post_id == models.Post.id, isouter=True)\
@@ -38,6 +40,7 @@ def get_posts_my(db: Session = Depends(database.get_db),
 
 @router.get("/latest", response_model=schemas.PostResponse)
 def get_latest_post(db: Session = Depends(database.get_db)) -> schemas.PostResponse:
+    """Fetch last published post"""
     # get last posted
     latest_post = db.query(models.Post, func.count(models.Rating.post_id).label("likes"))\
         .join(models.Rating, models.Rating.post_id == models.Post.id, isouter=True)\
@@ -50,6 +53,7 @@ def get_latest_post(db: Session = Depends(database.get_db)) -> schemas.PostRespo
 @router.get("/{id_}", response_model=schemas.PostResponse)
 def get_post(id_: int, db: Session = Depends(database.get_db),
              verified_user: models.User = Depends(oauth2.verify_current_user)) -> schemas.PostResponse:
+    """Find and fetch post by given id"""
     # find post by id
     found_post = db.query(models.Post, func.count(models.Rating.post_id).label("likes"))\
         .join(models.Rating, models.Rating.post_id == models.Post.id, isouter=True)\
@@ -69,6 +73,7 @@ def get_post(id_: int, db: Session = Depends(database.get_db),
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 def create_post(post: schemas.PostCreate, db: Session = Depends(database.get_db),
                 verified_user: models.User = Depends(oauth2.verify_current_user)) -> schemas.Post:
+    """Create new post"""
     # insert single post
     created_post = models.Post(**dict(post), owner_id=verified_user.id)      # unpack class as dict for easier input
     db.add(created_post)
@@ -81,7 +86,8 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(database.get_db)
 
 @router.put("/publish/{id_}")
 def change_post_visibility(id_: int, db: Session = Depends(database.get_db),
-                           verified_user: models.User = Depends(oauth2.verify_current_user)):
+                           verified_user: models.User = Depends(oauth2.verify_current_user)) -> dict:
+    """Change post visibility on opposite, published <-> unpublished"""
     # find post by id
     post = db.query(models.Post).filter(models.Post.id == id_)
     fetched_post = post.first()
@@ -105,7 +111,8 @@ def change_post_visibility(id_: int, db: Session = Depends(database.get_db),
 
 @router.delete("/{id_}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id_: int, db: Session = Depends(database.get_db),
-                verified_user: models.User = Depends(oauth2.verify_current_user)):
+                verified_user: models.User = Depends(oauth2.verify_current_user)) -> Response:
+    """Delete your post"""
     # find post for deletion by id
     deleted_post = db.query(models.Post).filter(models.Post.id == id_)
     post = deleted_post.first()
@@ -127,6 +134,7 @@ def delete_post(id_: int, db: Session = Depends(database.get_db),
 @router.put("/{id_}", response_model=schemas.PostResponse)
 def update_post(id_: int, post: schemas.PostCreate, db: Session = Depends(database.get_db),
                 verified_user: models.User = Depends(oauth2.verify_current_user)) -> schemas.PostResponse:
+    """Update your post"""
     # find post by id
     updated_post = db.query(models.Post).filter_by(id=id_)
     fetched_post = updated_post.first()

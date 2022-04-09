@@ -33,6 +33,7 @@ class User(Base):
 
 
 class Rating(Base):
+    """Table with users likes"""
     __tablename__ = "ratings"
 
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)

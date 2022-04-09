@@ -4,8 +4,8 @@ social media simulation
 
 ### TODO's
 - documentation
-- docstrings
 - dislike feature (direction: -1)
+- amount of posts created by user
 
 ### Used technologies
 - TODO
