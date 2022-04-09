@@ -79,6 +79,30 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(database.get_db)
     return created_post
 
 
+@router.put("/publish/{id_}")
+def change_post_visibility(id_: int, db: Session = Depends(database.get_db),
+                           verified_user: models.User = Depends(oauth2.verify_current_user)):
+    # find post by id
+    post = db.query(models.Post).filter(models.Post.id == id_)
+    fetched_post = post.first()
+    # raise 404 if post wasn't found
+    if fetched_post is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"post was not found (id: {id_})")
+    # raise 403 if user have insufficient rights
+    if fetched_post.owner_id != verified_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="unauthorized action")
+    # fetched_post.published = not fetched_post.published
+    updated_post = schemas.PostCreate(title=fetched_post.title, content=fetched_post.content,
+                                      published=not fetched_post.published)
+    # update fetched post
+    post.update(dict(updated_post), synchronize_session=False)
+    # commit changes into the database
+    db.commit()
+    return {"detail": f"post was successfully {'' if updated_post.published else 'un'}published (id: {id_})"}
+
+
 @router.delete("/{id_}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id_: int, db: Session = Depends(database.get_db),
                 verified_user: models.User = Depends(oauth2.verify_current_user)):
