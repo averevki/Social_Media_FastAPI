@@ -5,21 +5,17 @@ on:
   push:
     tags:
       - "v*.*.*"
-  workflow_run:
-    workflows: [ "Build and deploy" ]
-    branches: [ main ]
-    types:
-      - completed
 
 # Create GitHub Release with specified details from last commits
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout
+        uses: actions/checkout@v3
       - name: generate new release
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: false
-          files: |
-            LICENSE
+          files: LICENSE
